@@ -9,8 +9,8 @@ export const firebaseConfig = {
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "bus-ticketing-7e4d1",
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "bus-ticketing-7e4d1.firebasestorage.app",
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "384762358688",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:384762358688:web:889bb9b6e517ebf56fd2c5",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-L620Z0DD5X"
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:384762358688:web:9ecaafec076f7b486fd2c5",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-WL32EYGQDK"
 };
 
 // Initialize Firebase
