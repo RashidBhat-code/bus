@@ -10,6 +10,7 @@ import LiveTracker from './components/LiveTracker';
 import OperatorAdmin from './components/OperatorAdmin';
 import HindiSongsSection from './components/HindiSongsSection';
 import GlobalMusicBar from './components/GlobalMusicBar';
+import CamplySections from './components/CamplySections';
 import { 
   BUS_OPERATORS, 
   POPULAR_CITIES, 
@@ -40,9 +41,9 @@ export default function App() {
   // Navigation tab: 'search' | 'bookings' | 'tracker' | 'admin'
   const [activeTab, setActiveTab] = useState('search');
 
-  // Theme & Currency
+  // Theme & Currency (Light mode is signature Camply style)
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem(THEME_KEY) || 'dark';
+    return localStorage.getItem(THEME_KEY) || 'light';
   });
   const [currency, setCurrency] = useState('INR');
 
@@ -502,6 +503,14 @@ export default function App() {
 
               </div>
             </section>
+
+            {/* Camply-Style Community, Testimonials, and FAQ Sections */}
+            <CamplySections 
+              onExploreClick={() => {
+                const el = document.getElementById('route-search-anchor');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+            />
           </div>
         )}
 
@@ -572,19 +581,68 @@ export default function App() {
         progressSec={audioProgressSec}
       />
 
-      {/* Global App Footer */}
-      <footer className="app-footer glass-panel no-print">
-        <div className="footer-content">
-          <div className="footer-left">
-            <span className="footer-brand">Omni<strong>Bus</strong> India Express</span>
-            <span className="footer-copy">© 2026 OmniBus Mobility India Pvt Ltd. Partnered with KSRTC, TSRTC, MSRTC & Top Fleets.</span>
+      {/* Signature Cobalt Blue Footer (Reference Video Frame 00:16) */}
+      <footer className="camply-royal-footer no-print">
+        <div className="camply-footer-inner">
+          
+          {/* Left Brand Column */}
+          <div className="footer-col-brand">
+            <div className="footer-logo-wrap">
+              <span className="footer-logo-text">OmniBus</span>
+              <span className="footer-logo-dot">.</span>
+            </div>
+            <p className="footer-brand-tagline">
+              We always make our passengers happy by providing as many luxury travel choices as possible across 250+ Indian express corridors.
+            </p>
           </div>
-          <div className="footer-links">
-            <button className="footer-link-btn" onClick={() => setActiveTab('search')}>Book Buses</button>
-            <button className="footer-link-btn" onClick={() => setActiveTab('bookings')}>Manage Bookings</button>
-            <button className="footer-link-btn" onClick={() => setActiveTab('tracker')}>Live GPS Radar</button>
-            <button className="footer-link-btn" onClick={() => setActiveTab('admin')}>Operator Portal</button>
+
+          {/* Links Columns */}
+          <div className="footer-col-links">
+            <h4 className="footer-col-heading">Company</h4>
+            <ul className="footer-link-list">
+              <li><button onClick={() => setActiveTab('search')}>About Us</button></li>
+              <li><button onClick={() => setActiveTab('search')}>Features</button></li>
+              <li><button onClick={() => setActiveTab('search')}>Express Routes</button></li>
+              <li><button onClick={() => setActiveTab('search')}>FAQ Desk</button></li>
+            </ul>
           </div>
+
+          <div className="footer-col-links">
+            <h4 className="footer-col-heading">Resources</h4>
+            <ul className="footer-link-list">
+              <li><button onClick={() => setActiveTab('search')}>Festival Express</button></li>
+              <li><button onClick={() => setActiveTab('search')}>Promo Codes</button></li>
+              <li><button onClick={() => setActiveTab('tracker')}>Live Highway Radar</button></li>
+              <li><button onClick={() => setActiveTab('admin')}>Fleet Portal</button></li>
+            </ul>
+          </div>
+
+          <div className="footer-col-links">
+            <h4 className="footer-col-heading">Support</h4>
+            <ul className="footer-link-list">
+              <li><button onClick={() => setActiveTab('bookings')}>My Account</button></li>
+              <li><button onClick={() => setActiveTab('bookings')}>Support Center</button></li>
+              <li><button onClick={() => setActiveTab('bookings')}>Ticket Cancellation</button></li>
+              <li><button onClick={() => setActiveTab('search')}>Accessibility</button></li>
+            </ul>
+          </div>
+
+          {/* Contact Info Column */}
+          <div className="footer-col-contact">
+            <h4 className="footer-col-heading">Contact Info</h4>
+            <p className="footer-contact-email">support@omnibus.in</p>
+            <div className="footer-social-icons">
+              <span className="social-pill-icon" title="Instagram">📸</span>
+              <span className="social-pill-icon" title="Twitter">🐦</span>
+              <span className="social-pill-icon" title="Facebook">📘</span>
+              <span className="social-pill-icon" title="YouTube">▶️</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div className="footer-bottom-bar">
+          <p className="copyright-text">Copyright © 2026 OmniBus Mobility India Pvt Ltd. All rights reserved.</p>
         </div>
       </footer>
     </div>

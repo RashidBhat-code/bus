@@ -27,51 +27,55 @@ export default function Navbar({
 
   return (
     <>
-      <header className="navbar-container glass-panel">
-        <div className="nav-brand" onClick={() => setActiveTab('search')}>
-          <div className="logo-icon-wrapper">
-            <Bus className="logo-icon" size={26} />
-          </div>
-          <div className="logo-text">
-            <span className="brand-title">Omni<span className="brand-accent">Bus</span></span>
-            <span className="brand-badge">PRO</span>
+      <header className="navbar-container camply-navbar">
+        <div className="camply-nav-brand" onClick={() => setActiveTab('search')}>
+          <div className="camply-logo-dot-wrap">
+            <span className="brand-word">OmniBus</span>
+            <span className="brand-dot">.</span>
           </div>
         </div>
 
-        <nav className="nav-links">
+        <nav className="camply-nav-links">
           <button 
-            className={`nav-link-btn ${activeTab === 'search' ? 'active' : ''}`}
+            className={`camply-nav-btn ${activeTab === 'search' ? 'active' : ''}`}
             onClick={() => setActiveTab('search')}
           >
-            <Bus size={18} />
-            <span>Find Buses</span>
+            <span>Home</span>
           </button>
 
           <button 
-            className={`nav-link-btn ${activeTab === 'bookings' ? 'active' : ''}`}
+            className="camply-nav-btn"
+            onClick={() => {
+              setActiveTab('search');
+              const el = document.getElementById('route-search-anchor');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+            <span>Routes</span>
+          </button>
+
+          <button 
+            className={`camply-nav-btn ${activeTab === 'tracker' ? 'active' : ''}`}
+            onClick={() => setActiveTab('tracker')}
+          >
+            <span>Live Tracker</span>
+            <span className="nav-live-dot"></span>
+          </button>
+
+          <button 
+            className={`camply-nav-btn ${activeTab === 'bookings' ? 'active' : ''}`}
             onClick={() => setActiveTab('bookings')}
           >
-            <Ticket size={18} />
             <span>My Bookings</span>
             {bookingsCount > 0 && (
-              <span className="nav-counter-badge">{bookingsCount}</span>
+              <span className="nav-counter-pill">{bookingsCount}</span>
             )}
           </button>
 
           <button 
-            className={`nav-link-btn ${activeTab === 'tracker' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tracker')}
-          >
-            <MapPin size={18} />
-            <span>Live Tracker</span>
-            <span className="pulse-indicator"></span>
-          </button>
-
-          <button 
-            className={`nav-link-btn ${activeTab === 'admin' ? 'active' : ''}`}
+            className={`camply-nav-btn ${activeTab === 'admin' ? 'active' : ''}`}
             onClick={() => setActiveTab('admin')}
           >
-            <LayoutDashboard size={18} />
             <span>Fleet Portal</span>
           </button>
         </nav>
@@ -103,10 +107,10 @@ export default function Navbar({
               className="currency-dropdown"
               title="Change currency"
             >
+              <option value="INR">INR (₹)</option>
               <option value="USD">USD ($)</option>
               <option value="EUR">EUR (€)</option>
               <option value="GBP">GBP (£)</option>
-              <option value="INR">INR (₹)</option>
             </select>
           </div>
 
@@ -116,7 +120,16 @@ export default function Navbar({
             onClick={toggleTheme}
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
-            {theme === 'dark' ? <Sun size={19} className="sun-icon" /> : <Moon size={19} className="moon-icon" />}
+            {theme === 'dark' ? <Sun size={18} className="sun-icon" /> : <Moon size={18} className="moon-icon" />}
+          </button>
+
+          {/* Dark Pill CTA like Login button in video */}
+          <button 
+            className="btn-dark-pill nav-portal-cta" 
+            onClick={() => setActiveTab('admin')}
+            title="Fleet Operator Dispatcher"
+          >
+            <span>Operator Hub</span>
           </button>
 
           {/* 24x7 Help Button */}
@@ -126,7 +139,6 @@ export default function Navbar({
             title="24/7 Passenger Support"
           >
             <HelpCircle size={18} />
-            <span className="help-text">24/7 Support</span>
           </button>
         </div>
       </header>
