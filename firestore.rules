@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if request has valid bus schema
+    function isValidBus() {
+      return request.resource.data.name is string &&
+             request.resource.data.operator is string &&
+             request.resource.data.price is number;
+    }
+
+    // Helper function to check if booking has valid schema
+    function isValidBooking() {
+      return request.resource.data.pnr is string &&
+             request.resource.data.totalAmount is number &&
+             request.resource.data.seats is list;
+    }
+
+    // Buses Collection: Public read access, authorized/app write access
+    match /buses/{busId} {
+      allow read: if true;
+      allow write: if true; // In production, restrict to authenticated operators: request.auth != null
+    }
+
+    // Bookings Collection: Public read & create for ticketing, updates for status cancellation
+    match /bookings/{bookingId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if false; // Safeguard against accidental booking deletion
+    }
+
+    // System Metadata & Health checks
+    match /system_metadata/{docId} {
+      allow read, write: if true;
+    }
+
+    // Default fallback
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
