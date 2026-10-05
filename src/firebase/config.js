@@ -2,15 +2,15 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
+// Your web app's Firebase configuration (supports both environment variables and direct defaults)
 export const firebaseConfig = {
-  apiKey: "AIzaSyCBzDUDbHGmv1nNPPY0I75tbRqfNNt-NDo",
-  authDomain: "bus-ticketing-7e4d1.firebaseapp.com",
-  projectId: "bus-ticketing-7e4d1",
-  storageBucket: "bus-ticketing-7e4d1.firebasestorage.app",
-  messagingSenderId: "384762358688",
-  appId: "1:384762358688:web:889bb9b6e517ebf56fd2c5",
-  measurementId: "G-L620Z0DD5X"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCBzDUDbHGmv1nNPPY0I75tbRqfNNt-NDo",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "bus-ticketing-7e4d1.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "bus-ticketing-7e4d1",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "bus-ticketing-7e4d1.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "384762358688",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:384762358688:web:889bb9b6e517ebf56fd2c5",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-L620Z0DD5X"
 };
 
 // Initialize Firebase
