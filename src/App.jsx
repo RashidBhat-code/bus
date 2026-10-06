@@ -15,6 +15,8 @@ import {
   INITIAL_BOOKINGS, 
   getBusesForRoute 
 } from './data/mockBuses';
+import { getFlightsForRoute } from './data/mockFlights';
+import { getTrainsForRoute } from './data/mockTrains';
 import { 
   subscribeToBuses, 
   subscribeToBookings, 
@@ -56,7 +58,7 @@ export default function App() {
   const initialFilters = {
     timeSlots: [],
     busTypes: [],
-    maxPrice: 2000,
+    maxPrice: 12000,
     minRating: 0,
     onlyLiveTracking: false
   };
@@ -189,36 +191,71 @@ export default function App() {
     }
   };
 
-  // Perform search
+  // Perform search based on active travel mode
   const handleSearch = () => {
-    const routes = getBusesForRoute(searchParams.from, searchParams.to);
+    let routes;
+    if (activeMode === 'flights') {
+      routes = getFlightsForRoute(searchParams.from, searchParams.to);
+    } else if (activeMode === 'trains') {
+      routes = getTrainsForRoute(searchParams.from, searchParams.to);
+    } else {
+      routes = getBusesForRoute(searchParams.from, searchParams.to);
+    }
     setAllBuses(routes);
     setExpandedBusId(null);
     setSelectedSeats([]);
   };
 
+  // Sync catalog and adjust price limits whenever travel mode or cities change
+  useEffect(() => {
+    let modeData;
+    let defaultMaxPrice = 3000;
+    if (activeMode === 'flights') {
+      modeData = getFlightsForRoute(searchParams.from, searchParams.to);
+      defaultMaxPrice = 12000;
+    } else if (activeMode === 'trains') {
+      modeData = getTrainsForRoute(searchParams.from, searchParams.to);
+      defaultMaxPrice = 4500;
+    } else {
+      modeData = getBusesForRoute(searchParams.from, searchParams.to);
+      defaultMaxPrice = 3000;
+    }
+    setAllBuses(modeData);
+    setFilters(prev => ({ 
+      ...prev, 
+      maxPrice: defaultMaxPrice,
+      busTypes: [] 
+    }));
+    setExpandedBusId(null);
+    setSelectedSeats([]);
+  }, [activeMode, searchParams.from, searchParams.to]);
+
   // Filter application
   useEffect(() => {
     let result = [...allBuses];
 
-    if (searchParams.busClass === 'SLEEPER') {
-      result = result.filter(b => b.category === 'sleeper' || b.type.toLowerCase().includes('sleeper'));
-    } else if (searchParams.busClass === 'WASHROOM') {
-      result = result.filter(b => b.hasWashroom);
-    } else if (searchParams.busClass === 'GOVT_RTC') {
-      result = result.filter(b => b.isGovtRTC);
-    } else if (searchParams.busClass === 'EV') {
-      result = result.filter(b => b.category === 'electric' || b.type.toLowerCase().includes('ev') || b.type.toLowerCase().includes('electric'));
-    } else if (searchParams.busClass === 'SEATER') {
-      result = result.filter(b => b.category === 'seater' || b.type.toLowerCase().includes('seater'));
-    } else if (searchParams.busClass === 'BUDGET') {
-      result = result.filter(b => b.category === 'budget' || b.type.toLowerCase().includes('budget') || b.type.toLowerCase().includes('non-ac'));
+    if (activeMode === 'buses') {
+      if (searchParams.busClass === 'SLEEPER') {
+        result = result.filter(b => b.category === 'sleeper' || b.type.toLowerCase().includes('sleeper'));
+      } else if (searchParams.busClass === 'WASHROOM') {
+        result = result.filter(b => b.hasWashroom);
+      } else if (searchParams.busClass === 'GOVT_RTC') {
+        result = result.filter(b => b.isGovtRTC);
+      } else if (searchParams.busClass === 'EV') {
+        result = result.filter(b => b.category === 'electric' || b.type.toLowerCase().includes('ev') || b.type.toLowerCase().includes('electric'));
+      } else if (searchParams.busClass === 'SEATER') {
+        result = result.filter(b => b.category === 'seater' || b.type.toLowerCase().includes('seater'));
+      } else if (searchParams.busClass === 'BUDGET') {
+        result = result.filter(b => b.category === 'budget' || b.type.toLowerCase().includes('budget') || b.type.toLowerCase().includes('non-ac'));
+      }
     }
 
     if (filters.timeSlots.length > 0) {
       result = result.filter(bus => {
         const timeStr = bus.departureTime;
+        if (!timeStr) return true;
         const [timePart, meridiem] = timeStr.split(' ');
+        if (!timePart) return true;
         let [hours] = timePart.split(':').map(Number);
         if (meridiem === 'PM' && hours < 12) hours += 12;
         if (meridiem === 'AM' && hours === 12) hours = 0;
@@ -233,9 +270,9 @@ export default function App() {
       });
     }
 
-    if (filters.busTypes.length > 0) {
+    if (activeMode === 'buses' && filters.busTypes.length > 0) {
       result = result.filter(bus => {
-        const t = bus.type.toLowerCase();
+        const t = bus.type ? bus.type.toLowerCase() : '';
         return filters.busTypes.some(ft => {
           if (ft === 'washroom') return bus.hasWashroom;
           if (ft === 'govt') return bus.isGovtRTC;
@@ -259,7 +296,7 @@ export default function App() {
     }
 
     setDisplayedBuses(result);
-  }, [allBuses, filters, searchParams.busClass]);
+  }, [allBuses, filters, searchParams.busClass, activeMode]);
 
   const handleToggleSeat = (seat) => {
     setSelectedSeats(prev => {
@@ -382,7 +419,7 @@ export default function App() {
             />
 
             {/* Results & Filters Grid */}
-            <section className="results-section">
+            <section className="results-section" id="search-results-anchor">
               <div className="results-container-grid">
                 
                 {/* Left Sidebar Filter */}
@@ -392,25 +429,46 @@ export default function App() {
                   resetFilters={() => setFilters(initialFilters)}
                   formatPrice={formatPrice}
                   totalResultsCount={displayedBuses.length}
+                  activeMode={activeMode}
                 />
 
                 {/* Right Results Stream */}
                 <div className="bus-results-stream">
                   <div className="results-header-banner glass-panel">
                     <div className="results-title-block">
-                      <h2>Available Express Buses: {searchParams.from} ➔ {searchParams.to}</h2>
+                      <h2>
+                        {activeMode === 'flights' 
+                          ? `Available Non-Stop Flights: ${searchParams.from} ➔ ${searchParams.to}`
+                          : activeMode === 'trains'
+                          ? `Available Express Trains: ${searchParams.from} ➔ ${searchParams.to}`
+                          : `Available Express Buses: ${searchParams.from} ➔ ${searchParams.to}`}
+                      </h2>
                       <span className="results-date-tag">Date: {searchParams.date}</span>
                     </div>
 
                     <div className="sort-hint-tag">
-                      <span>🇮🇳 IRCTC & State Transport Linked</span>
+                      <span>
+                        {activeMode === 'flights'
+                          ? '✈️ DGCA & Airport Authority Linked'
+                          : activeMode === 'trains'
+                          ? '🚆 IRCTC Official Partner'
+                          : '🇮🇳 IRCTC & State Transport Linked'}
+                      </span>
                     </div>
                   </div>
 
                   {displayedBuses.length === 0 ? (
                     <div className="no-buses-found glass-panel">
-                      <div className="no-buses-icon">🚌</div>
-                      <h3>No buses matched your criteria</h3>
+                      <div className="no-buses-icon">
+                        {activeMode === 'flights' ? '✈️' : activeMode === 'trains' ? '🚆' : '🚌'}
+                      </div>
+                      <h3>
+                        {activeMode === 'flights' 
+                          ? 'No flights matched your criteria'
+                          : activeMode === 'trains'
+                          ? 'No trains matched your criteria'
+                          : 'No buses matched your criteria'}
+                      </h3>
                       <p>Try resetting the price filter, adjusting departure time, or choosing another city pair.</p>
                       <button className="btn-secondary" onClick={() => setFilters(initialFilters)}>
                         Reset Filters

@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Info
 } from 'lucide-react';
+import PlaneSeatLayout from './PlaneSeatLayout';
 
 export default function SeatLayout({ 
   bus, 
@@ -20,6 +21,23 @@ export default function SeatLayout({
   setDroppingPoint,
   formatPrice
 }) {
+  // If this vehicle is a flight, render the dedicated Airplane Cabin Seatmap
+  if (bus && (bus.mode === 'flights' || bus.category === 'flight')) {
+    return (
+      <PlaneSeatLayout 
+        flight={bus}
+        selectedSeats={selectedSeats}
+        onToggleSeat={onToggleSeat}
+        onProceedToBooking={onProceedToBooking}
+        boardingPoint={boardingPoint}
+        setBoardingPoint={setBoardingPoint}
+        droppingPoint={droppingPoint}
+        setDroppingPoint={setDroppingPoint}
+        formatPrice={formatPrice}
+      />
+    );
+  }
+
   const hasUpperDeck = bus.upperDeck && bus.upperDeck.length > 0;
   const [currentDeck, setCurrentDeck] = useState('lower');
 

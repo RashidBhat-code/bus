@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plane, 
   Bus, 
@@ -13,23 +13,30 @@ import {
   Headphones, 
   Zap, 
   ChevronRight, 
-  Star,
-  CheckCircle2,
-  TrendingUp,
-  Percent,
-  Sparkles
+  Star, 
+  CheckCircle2, 
+  TrendingUp, 
+  Percent, 
+  Sparkles 
 } from 'lucide-react';
 import CitySearchInput from './CitySearchInput';
 
 export default function HeroSearch({ 
   searchParams, 
   setSearchParams, 
-  onSearch,
-  activeMode = 'buses',
-  setActiveMode
+  onSearch, 
+  activeMode = 'buses', 
+  setActiveMode 
 }) {
   const [isSwapping, setIsSwapping] = useState(false);
   const [travelMode, setTravelMode] = useState(activeMode || 'buses'); // 'flights' | 'buses' | 'trains'
+
+  // Keep travelMode in sync when activeMode updates from navbar or parent
+  useEffect(() => {
+    if (activeMode && activeMode !== travelMode) {
+      setTravelMode(activeMode);
+    }
+  }, [activeMode]);
 
   // Handle City Swap with smooth animation
   const handleSwap = () => {
@@ -71,7 +78,7 @@ export default function HeroSearch({
     e.preventDefault();
     onSearch();
     // Scroll smoothly to results
-    const resultsAnchor = document.getElementById('search-results-anchor');
+    const resultsAnchor = document.getElementById('search-results-anchor') || document.getElementById('route-search-anchor');
     if (resultsAnchor) {
       resultsAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -260,22 +267,41 @@ export default function HeroSearch({
                     onChange={(e) => setSearchParams(prev => ({ ...prev, busClass: e.target.value }))}
                     className="category-dropdown-select"
                   >
-                    <option value="ALL">1 Passenger • All Coaches</option>
-                    <option value="SLEEPER">1 Passenger • AC Sleeper (2+1)</option>
-                    <option value="WASHROOM">1 Passenger • With Washroom 🚻</option>
-                    <option value="GOVT_RTC">1 Passenger • Govt RTC (KSRTC/MSRTC) 🏛️</option>
-                    <option value="EV">1 Passenger • 100% Electric EV ⚡</option>
-                    <option value="SEATER">1 Passenger • Semi-Sleeper (2+2)</option>
-                    <option value="BUDGET">1 Passenger • Non-AC Budget 🏷️</option>
+                    {travelMode === 'flights' ? (
+                      <>
+                        <option value="ALL">1 Passenger • Economy & Business</option>
+                        <option value="ECONOMY">1 Passenger • Economy Cabin</option>
+                        <option value="BUSINESS">1 Passenger • Business Class Recliner</option>
+                      </>
+                    ) : travelMode === 'trains' ? (
+                      <>
+                        <option value="ALL">1 Passenger • All Rail Classes</option>
+                        <option value="EC">1 Passenger • Executive Chair Car (EC)</option>
+                        <option value="CC">1 Passenger • AC Chair Car (CC)</option>
+                        <option value="1A">1 Passenger • 1st AC Tier</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="ALL">1 Passenger • All Coaches</option>
+                        <option value="SLEEPER">1 Passenger • AC Sleeper (2+1)</option>
+                        <option value="WASHROOM">1 Passenger • With Washroom 🚻</option>
+                        <option value="GOVT_RTC">1 Passenger • Govt RTC (KSRTC/MSRTC) 🏛️</option>
+                        <option value="EV">1 Passenger • 100% Electric EV ⚡</option>
+                        <option value="SEATER">1 Passenger • Semi-Sleeper (2+2)</option>
+                        <option value="BUDGET">1 Passenger • Non-AC Budget 🏷️</option>
+                      </>
+                    )}
                   </select>
                 </div>
               </div>
 
-              {/* Vibrant Blue Search Button (Matching reference image) */}
+              {/* Vibrant Blue Search Button */}
               <div className="search-cta-box">
                 <button type="submit" className="btn-rashtrips-search">
                   <Search size={18} />
-                  <span>Search</span>
+                  <span>
+                    {travelMode === 'flights' ? 'Search Flights' : travelMode === 'trains' ? 'Search Trains' : 'Search Buses'}
+                  </span>
                 </button>
               </div>
 

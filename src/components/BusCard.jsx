@@ -14,7 +14,10 @@ import {
   Coffee,
   Sparkles,
   Building,
-  Droplets
+  Droplets,
+  Plane,
+  Train,
+  Luggage
 } from 'lucide-react';
 import SeatLayout from './SeatLayout';
 
@@ -32,24 +35,34 @@ export default function BusCard({
   formatPrice
 }) {
   const isFewSeatsLeft = bus.availableSeatsCount <= 10;
+  const isFlight = bus.mode === 'flights' || bus.category === 'flight';
+  const isTrain = bus.mode === 'trains' || bus.category === 'train';
 
   return (
-    <div className={`bus-result-card glass-panel ${isSelected ? 'card-expanded' : ''}`}>
+    <div className={`bus-result-card glass-panel ${isSelected ? 'card-expanded' : ''} ${isFlight ? 'flight-result-card' : ''}`}>
       {/* Top Banner Badge if present */}
       {bus.badge && (
-        <div className={`bus-highlight-strip ${bus.hasWashroom ? 'strip-washroom' : ''} ${bus.isGovtRTC ? 'strip-govtrtc' : ''} ${bus.category === 'electric' ? 'strip-electric' : ''}`}>
+        <div className={`bus-highlight-strip ${isFlight ? 'strip-flight' : ''} ${bus.hasWashroom ? 'strip-washroom' : ''} ${bus.isGovtRTC ? 'strip-govtrtc' : ''} ${bus.category === 'electric' ? 'strip-electric' : ''}`}>
           <span className="strip-text">{bus.badge}</span>
         </div>
       )}
 
-      {/* Main Bus Header & Summary */}
+      {/* Main Bus/Flight/Train Header & Summary */}
       <div className="bus-card-main-grid">
         
-        {/* Left Column: Operator & Bus Info */}
+        {/* Left Column: Operator & Travel Info */}
         <div className="bus-operator-info">
           <div className="operator-header">
             <h3 className="bus-title">{bus.name}</h3>
-            {bus.isGovtRTC ? (
+            {isFlight ? (
+              <span className="verified-tag flight-verified" title="DGCA Certified Indian Airline">
+                <Plane size={13} className="text-flight-blue" /> DGCA Certified Airline
+              </span>
+            ) : isTrain ? (
+              <span className="govt-rtc-tag" title="Official Indian Railways / IRCTC Partner">
+                <Train size={13} /> IRCTC Rail Partner
+              </span>
+            ) : bus.isGovtRTC ? (
               <span className="govt-rtc-tag" title="Official State Road Transport Corporation">
                 <Building size={13} /> Govt RTC
               </span>
@@ -64,14 +77,19 @@ export default function BusCard({
           <div className="bus-ratings-wrap">
             <div className="rating-badge">
               <Star size={14} fill="currentColor" strokeWidth={0} />
-              <span>{bus.rating.toFixed(1)}</span>
+              <span>{bus.rating ? bus.rating.toFixed(1) : '4.8'}</span>
             </div>
-            <span className="reviews-count">({bus.reviewsCount.toLocaleString()} reviews)</span>
+            <span className="reviews-count">({bus.reviewsCount ? bus.reviewsCount.toLocaleString() : '1,200'} reviews)</span>
           </div>
 
           <div className="amenities-icons-list">
+            {isFlight && bus.baggage && (
+              <span className="amenity-chip highlight-baggage" title={bus.baggage}>
+                <Luggage size={14} /> {bus.baggage}
+              </span>
+            )}
             {bus.hasWashroom && (
-              <span className="amenity-chip highlight-washroom" title="Hygienic Bio-Toilet / Washroom Onboard">
+              <span className="amenity-chip highlight-washroom" title="Bio-Toilet / Washroom Available Onboard">
                 <span className="amenity-emoji">🚻</span> Washroom
               </span>
             )}
@@ -80,9 +98,8 @@ export default function BusCard({
                 <Zap size={14} className="text-success" /> EV Green
               </span>
             )}
-            <span className="amenity-chip" title="High-Speed 5G Wi-Fi"><Wifi size={14} /> Wi-Fi</span>
-            <span className="amenity-chip" title="USB & Fast Charging"><Zap size={14} /> Charging</span>
-            <span className="amenity-chip" title="Live Highway GPS"><Compass size={14} /> Live GPS</span>
+            <span className="amenity-chip" title="Fast Charging"><Zap size={14} /> Charging</span>
+            <span className="amenity-chip" title="Realtime GPS Telemetry"><Compass size={14} /> Live Telemetry</span>
           </div>
         </div>
 
@@ -90,8 +107,10 @@ export default function BusCard({
         <div className="bus-timing-schedule">
           <div className="time-block departure">
             <span className="time-main">{bus.departureTime}</span>
-            <span className="city-name">{bus.from}</span>
-            <span className="stop-hint">{bus.boardingPoints[0]?.name.slice(0, 24)}...</span>
+            <span className="city-name">
+              {bus.departureAirportCode ? `${bus.departureAirportCode} - ${bus.from}` : bus.from}
+            </span>
+            <span className="stop-hint">{bus.boardingPoints?.[0]?.name.slice(0, 26)}...</span>
           </div>
 
           <div className="duration-timeline">
@@ -99,17 +118,23 @@ export default function BusCard({
             <div className="timeline-graphic">
               <span className="timeline-dot start"></span>
               <span className="timeline-line"></span>
-              <span className="timeline-bus-icon">🚌</span>
+              <span className="timeline-bus-icon">
+                {isFlight ? '✈️' : isTrain ? '🚆' : '🚌'}
+              </span>
               <span className="timeline-line"></span>
               <span className="timeline-dot end"></span>
             </div>
-            <span className="route-type-label">Direct Express</span>
+            <span className="route-type-label">
+              {isFlight ? 'Non-Stop Flight' : isTrain ? 'Superfast Rail' : 'Direct Highway Express'}
+            </span>
           </div>
 
           <div className="time-block arrival">
             <span className="time-main">{bus.arrivalTime}</span>
-            <span className="city-name">{bus.to}</span>
-            <span className="stop-hint">{bus.droppingPoints[0]?.name.slice(0, 24)}...</span>
+            <span className="city-name">
+              {bus.arrivalAirportCode ? `${bus.arrivalAirportCode} - ${bus.to}` : bus.to}
+            </span>
+            <span className="stop-hint">{bus.droppingPoints?.[0]?.name.slice(0, 26)}...</span>
           </div>
         </div>
 
@@ -132,7 +157,7 @@ export default function BusCard({
 
           <div className="seats-available-info">
             <span className={`seats-left-badge ${isFewSeatsLeft ? 'few-left' : 'plenty-left'}`}>
-              {bus.availableSeatsCount} seats left
+              {bus.availableSeatsCount} seats available
             </span>
           </div>
 
@@ -140,7 +165,11 @@ export default function BusCard({
             className={`btn-select-seats ${isSelected ? 'active' : ''}`}
             onClick={onToggleExpand}
           >
-            <span>{isSelected ? 'Close Seat Map' : 'Select Seats'}</span>
+            <span>
+              {isSelected 
+                ? (isFlight ? 'Close Cabin Seats' : isTrain ? 'Close Rail Berths' : 'Close Seat Map')
+                : (isFlight ? 'Select Flight Seats ✈️' : isTrain ? 'Select Train Seats 🚆' : 'Select Seats')}
+            </span>
             {isSelected ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
         </div>

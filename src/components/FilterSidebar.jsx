@@ -20,8 +20,16 @@ export default function FilterSidebar({
   setFilters, 
   resetFilters, 
   formatPrice, 
-  totalResultsCount 
+  totalResultsCount,
+  activeMode = 'buses'
 }) {
+  const isFlight = activeMode === 'flights';
+  const isTrain = activeMode === 'trains';
+
+  const minPrice = isFlight ? 2000 : 500;
+  const maxPriceLimit = isFlight ? 12000 : (isTrain ? 4000 : 3000);
+  const stepPrice = isFlight ? 200 : 50;
+
   const toggleTimeSlot = (slot) => {
     setFilters(prev => {
       const exists = prev.timeSlots.includes(slot);
@@ -60,7 +68,7 @@ export default function FilterSidebar({
       </div>
 
       <div className="results-count-strip">
-        Showing <strong>{totalResultsCount}</strong> buses on this route
+        Showing <strong>{totalResultsCount}</strong> {isFlight ? 'flights' : isTrain ? 'trains' : 'buses'} on this route
       </div>
 
       {/* Departure Time Slots */}
@@ -105,71 +113,73 @@ export default function FilterSidebar({
         </div>
       </div>
 
-      {/* Coach Categories & Amenities */}
-      <div className="filter-section">
-        <h4 className="filter-heading">Bus Category & Amenities</h4>
-        <div className="filter-checkbox-list">
-          <label className="filter-checkbox-item">
-            <input 
-              type="checkbox" 
-              checked={filters.busTypes.includes('washroom')}
-              onChange={() => toggleBusType('washroom')}
-            />
-            <span className="checkbox-label-content">
-              <strong>🚻 With Washroom / Toilet</strong>
-            </span>
-          </label>
+      {/* Coach Categories & Amenities (For Buses) */}
+      {!isFlight && !isTrain && (
+        <div className="filter-section">
+          <h4 className="filter-heading">Bus Category & Amenities</h4>
+          <div className="filter-checkbox-list">
+            <label className="filter-checkbox-item">
+              <input 
+                type="checkbox" 
+                checked={filters.busTypes.includes('washroom')}
+                onChange={() => toggleBusType('washroom')}
+              />
+              <span className="checkbox-label-content">
+                <strong>🚻 With Washroom / Toilet</strong>
+              </span>
+            </label>
 
-          <label className="filter-checkbox-item">
-            <input 
-              type="checkbox" 
-              checked={filters.busTypes.includes('govt')}
-              onChange={() => toggleBusType('govt')}
-            />
-            <span className="checkbox-label-content">
-              <strong>🏛️ Govt RTC (KSRTC / MSRTC / TSRTC)</strong>
-            </span>
-          </label>
+            <label className="filter-checkbox-item">
+              <input 
+                type="checkbox" 
+                checked={filters.busTypes.includes('govt')}
+                onChange={() => toggleBusType('govt')}
+              />
+              <span className="checkbox-label-content">
+                <strong>🏛️ Govt RTC (KSRTC / MSRTC / TSRTC)</strong>
+              </span>
+            </label>
 
-          <label className="filter-checkbox-item">
-            <input 
-              type="checkbox" 
-              checked={filters.busTypes.includes('sleeper')}
-              onChange={() => toggleBusType('sleeper')}
-            />
-            <span>Volvo AC Sleeper (2+1)</span>
-          </label>
+            <label className="filter-checkbox-item">
+              <input 
+                type="checkbox" 
+                checked={filters.busTypes.includes('sleeper')}
+                onChange={() => toggleBusType('sleeper')}
+              />
+              <span>Volvo AC Sleeper (2+1)</span>
+            </label>
 
-          <label className="filter-checkbox-item">
-            <input 
-              type="checkbox" 
-              checked={filters.busTypes.includes('seater')}
-              onChange={() => toggleBusType('seater')}
-            />
-            <span>Multi-Axle Semi-Sleeper (2+2)</span>
-          </label>
+            <label className="filter-checkbox-item">
+              <input 
+                type="checkbox" 
+                checked={filters.busTypes.includes('seater')}
+                onChange={() => toggleBusType('seater')}
+              />
+              <span>Multi-Axle Semi-Sleeper (2+2)</span>
+            </label>
 
-          <label className="filter-checkbox-item">
-            <input 
-              type="checkbox" 
-              checked={filters.busTypes.includes('electric')}
-              onChange={() => toggleBusType('electric')}
-            />
-            <span>100% Eco Electric Coach (EV) ⚡</span>
-          </label>
+            <label className="filter-checkbox-item">
+              <input 
+                type="checkbox" 
+                checked={filters.busTypes.includes('electric')}
+                onChange={() => toggleBusType('electric')}
+              />
+              <span>100% Eco Electric Coach (EV) ⚡</span>
+            </label>
 
-          <label className="filter-checkbox-item">
-            <input 
-              type="checkbox" 
-              checked={filters.busTypes.includes('budget')}
-              onChange={() => toggleBusType('budget')}
-            />
-            <span>Budget Non-AC Sleeper 🏷️</span>
-          </label>
+            <label className="filter-checkbox-item">
+              <input 
+                type="checkbox" 
+                checked={filters.busTypes.includes('budget')}
+                onChange={() => toggleBusType('budget')}
+              />
+              <span>Budget Non-AC Sleeper 🏷️</span>
+            </label>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Price Range Slider (Adapted for INR) */}
+      {/* Price Range Slider (Adapted for INR & Mode) */}
       <div className="filter-section">
         <div className="range-header">
           <h4 className="filter-heading">Max Ticket Fare</h4>
@@ -177,16 +187,16 @@ export default function FilterSidebar({
         </div>
         <input 
           type="range" 
-          min="500" 
-          max="2500" 
-          step="50"
+          min={minPrice} 
+          max={maxPriceLimit} 
+          step={stepPrice}
           value={filters.maxPrice}
           onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: Number(e.target.value) }))}
           className="price-slider"
         />
         <div className="range-bounds">
-          <span>{formatPrice(500)}</span>
-          <span>{formatPrice(2500)}</span>
+          <span>{formatPrice(minPrice)}</span>
+          <span>{formatPrice(maxPriceLimit)}</span>
         </div>
       </div>
 
@@ -213,12 +223,12 @@ export default function FilterSidebar({
         </div>
       </div>
 
-      {/* Live GPS Tracking */}
+      {/* Live Radar Telemetry */}
       <div className="filter-section">
         <label className="filter-toggle-row">
           <div className="toggle-label-wrap">
             <Compass size={16} className="text-cyan" />
-            <span>Only Live GPS Buses</span>
+            <span>Only Live Telemetry</span>
           </div>
           <input 
             type="checkbox" 

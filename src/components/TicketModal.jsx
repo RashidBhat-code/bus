@@ -10,6 +10,8 @@ import {
   Calendar, 
   Clock, 
   Bus, 
+  Plane,
+  Train,
   User, 
   ShieldCheck, 
   Navigation,
@@ -25,6 +27,9 @@ export default function TicketModal({
   formatPrice 
 }) {
   const [qrDataUrl, setQrDataUrl] = useState('');
+
+  const isFlight = booking?.mode === 'flights' || booking?.category === 'flight' || booking?.busName?.toLowerCase().includes('indigo') || booking?.busName?.toLowerCase().includes('air india') || booking?.busName?.toLowerCase().includes('vistara') || booking?.busName?.toLowerCase().includes('akasa') || booking?.busName?.toLowerCase().includes('spicejet');
+  const isTrain = booking?.mode === 'trains' || booking?.category === 'train' || booking?.busName?.toLowerCase().includes('express') && !booking?.busName?.toLowerCase().includes('bus');
 
   useEffect(() => {
     if (booking) {
@@ -80,7 +85,7 @@ export default function TicketModal({
           <div className="ticket-action-btns">
             <button className="btn-secondary" onClick={handlePrint} title="Print or Save PDF">
               <Printer size={16} />
-              <span>Print Boarding Pass</span>
+              <span>{isFlight ? 'Print Flight Boarding Pass' : 'Print Boarding Pass'}</span>
             </button>
             <button 
               className="btn-primary" 
@@ -88,7 +93,7 @@ export default function TicketModal({
               title="Track live GPS status"
             >
               <Navigation size={16} />
-              <span>Track Live GPS</span>
+              <span>Track Live Status</span>
             </button>
             <button className="modal-close" onClick={onClose}>
               <X size={20} />
@@ -103,9 +108,17 @@ export default function TicketModal({
           <div className="ticket-header-strip">
             <div className="brand-badge-row">
               <div className="ticket-logo-mark">
-                <Bus size={22} className="ticket-icon" />
+                {isFlight ? (
+                  <Plane size={22} className="ticket-icon text-flight-blue" />
+                ) : isTrain ? (
+                  <Train size={22} className="ticket-icon" />
+                ) : (
+                  <Bus size={22} className="ticket-icon" />
+                )}
                 <span className="ticket-brand-name">Rash<strong>Trips</strong> India</span>
-                <span className="e-pass-badge">Official MoRTH E-Ticket</span>
+                <span className="e-pass-badge">
+                  {isFlight ? 'Official DGCA Boarding Pass' : isTrain ? 'Official IRCTC E-Ticket' : 'Official MoRTH E-Ticket'}
+                </span>
               </div>
               <div className="pnr-block">
                 <span className="pnr-label">PNR / BOOKING REF</span>
@@ -139,11 +152,17 @@ export default function TicketModal({
               <div className="journey-line">
                 <span className="j-dot"></span>
                 <span className="j-bar"></span>
-                <Bus size={18} className="j-bus" />
+                {isFlight ? (
+                  <Plane size={18} className="j-bus text-flight-blue" />
+                ) : isTrain ? (
+                  <Train size={18} className="j-bus" />
+                ) : (
+                  <Bus size={18} className="j-bus" />
+                )}
                 <span className="j-bar"></span>
                 <span className="j-dot"></span>
               </div>
-              <span className="j-duration">Direct Express</span>
+              <span className="j-duration">{isFlight ? 'Non-Stop Direct Flight' : 'Direct Express'}</span>
             </div>
 
             <div className="journey-station text-right">
