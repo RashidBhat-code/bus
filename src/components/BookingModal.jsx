@@ -136,9 +136,9 @@ export default function BookingModal({
       setIsSendingOtp(false);
       setShowOtpInput(true);
       setSmsNotification({
-        sender: "OMNIBUS-GOVT-OTP",
+        sender: "RASHTRIPS-OTP",
         time: "Just now",
-        message: `Your OmniBus India Passenger Verification OTP is ${code}. Valid for 10 minutes. Do not share with anyone.`
+        message: `Your RashTrips India Passenger Verification OTP is ${code}. Valid for 10 minutes. Do not share with anyone.`
       });
     }, 700);
   };

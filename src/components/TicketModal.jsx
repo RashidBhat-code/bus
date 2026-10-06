@@ -104,7 +104,7 @@ export default function TicketModal({
             <div className="brand-badge-row">
               <div className="ticket-logo-mark">
                 <Bus size={22} className="ticket-icon" />
-                <span className="ticket-brand-name">Omni<strong>Bus</strong> India</span>
+                <span className="ticket-brand-name">Rash<strong>Trips</strong> India</span>
                 <span className="e-pass-badge">Official MoRTH E-Ticket</span>
               </div>
               <div className="pnr-block">
@@ -260,7 +260,7 @@ export default function TicketModal({
                 {booking.seats.map(s => ` ${s.idProofType || 'Govt ID'}`).slice(0, 2).join(' / ')} as verified above.
               </p>
               <p className="ticket-guideline">
-                • <strong>Emergency Support:</strong> 24x7 India Highway Passenger Helpline: <strong>1800-102-OMNI</strong> / <strong>+91 80 4567 8900</strong>
+                • <strong>Emergency Support:</strong> 24x7 India Highway Passenger Helpline: <strong>1800-102-RASH</strong> / <strong>+91 80 4567 8900</strong>
               </p>
               <p className="ticket-guideline">
                 • Free cancellation available up to 4 hours prior to scheduled departure time.

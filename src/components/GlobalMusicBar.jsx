@@ -27,7 +27,7 @@ export default function GlobalMusicBar({
 }) {
   const [isMuted, setIsMuted] = useState(false);
   const [prevVolume, setPrevVolume] = useState(volume);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   if (!currentSong) return null;
 
@@ -51,8 +51,28 @@ export default function GlobalMusicBar({
 
   const progressPercent = Math.min(100, (progressSec / currentSong.durationSec) * 100);
 
+  if (isCollapsed) {
+    return (
+      <div className="global-music-bar-collapsed-pill">
+        <button 
+          type="button"
+          className="btn-expand-music-pill"
+          onClick={() => setIsCollapsed(false)}
+          title="Open 90s Bollywood Highway Radio"
+        >
+          <span className="pill-pulse-dot"></span>
+          <span className="pill-emoji">{currentSong.coverEmoji || '📻'}</span>
+          <span className="pill-text">
+            {isPlaying ? `Playing: ${currentSong.title}` : '90s Coach Radio'}
+          </span>
+          <span className="pill-action-arrow">▲</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className={`global-music-bar-container ${isCollapsed ? 'player-collapsed' : ''}`}>
+    <div className="global-music-bar-container">
       <div className="music-bar-wrapper glass-panel">
         
         {/* Progress Timeline on Top Edge */}

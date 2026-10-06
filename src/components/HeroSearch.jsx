@@ -1,32 +1,37 @@
 import React, { useState } from 'react';
 import { 
+  Plane, 
+  Bus, 
+  Train, 
+  MapPin, 
   Calendar, 
+  Users, 
   ArrowLeftRight, 
   Search, 
-  MapPin, 
   ShieldCheck, 
-  Zap, 
-  Sparkles, 
-  Check, 
-  Bus, 
-  Compass, 
-  CreditCard, 
-  Smile, 
   Clock, 
+  Headphones, 
+  Zap, 
+  ChevronRight, 
   Star,
-  ChevronRight,
-  Navigation
+  CheckCircle2,
+  TrendingUp,
+  Percent,
+  Sparkles
 } from 'lucide-react';
 import CitySearchInput from './CitySearchInput';
 
 export default function HeroSearch({ 
   searchParams, 
   setSearchParams, 
-  onSearch 
+  onSearch,
+  activeMode = 'buses',
+  setActiveMode
 }) {
   const [isSwapping, setIsSwapping] = useState(false);
+  const [travelMode, setTravelMode] = useState(activeMode || 'buses'); // 'flights' | 'buses' | 'trains'
 
-  // Handle City Swap
+  // Handle City Swap with smooth animation
   const handleSwap = () => {
     setIsSwapping(true);
     const temp = searchParams.from;
@@ -38,549 +43,407 @@ export default function HeroSearch({
     setTimeout(() => setIsSwapping(false), 300);
   };
 
-  const scrollToSearch = () => {
-    const el = document.getElementById('route-search-anchor');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Quick Date Chips
+  const setQuickDate = (offsetDays) => {
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + offsetDays);
+    const formatted = targetDate.toISOString().split('T')[0];
+    setSearchParams(prev => ({ ...prev, date: formatted }));
+  };
+
+  const isToday = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return searchParams.date === today;
+  };
+
+  const isTomorrow = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return searchParams.date === tomorrow.toISOString().split('T')[0];
+  };
+
+  const handleModeChange = (mode) => {
+    setTravelMode(mode);
+    if (setActiveMode) setActiveMode(mode);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    onSearch();
+    // Scroll smoothly to results
+    const resultsAnchor = document.getElementById('search-results-anchor');
+    if (resultsAnchor) {
+      resultsAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
-  // Quick select an Indian route
-  const selectPinRoute = (from, to) => {
-    setSearchParams(prev => ({
-      ...prev,
-      from,
-      to
-    }));
-    scrollToSearch();
-  };
-
   return (
-    <div className="camply-hero-wrapper">
+    <div className="rashtrips-landing-wrapper">
       
       {/* ====================================================================
-          1. HERO MAIN STAGE (Reference Video Frame 00:01 - 00:04)
+          1. HERO BANNER WITH SCENIC MULTI-MODAL BACKGROUND
           ==================================================================== */}
-      <section className="camply-hero-banner">
-        <div className="camply-hero-container">
+      <section className="rashtrips-hero-banner" style={{ backgroundImage: `url('/rashtrips-hero.jpg')` }}>
+        <div className="hero-dark-overlay"></div>
+
+        <div className="rashtrips-hero-content">
           
-          {/* Left Column: Heading, Doodles, Subtext, Dark CTA */}
-          <div className="hero-left-editorial">
+          {/* Left Column Grouping All Text and Badges (Matching Reference Image) */}
+          <div className="hero-editorial-left-col">
             
-            {/* Playful Hand-Drawn Doodle SVG */}
-            <div className="doodle-spark-top">
-              <svg width="48" height="42" viewBox="0 0 48 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 32C14 18 28 8 44 4M24 16C28 24 36 32 44 38M8 12C12 8 18 6 22 8" stroke="#1665ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+            {/* Top Pill Kicker */}
+            <div className="hero-kicker-row">
+              <span className="hero-kicker-text">
+                FLIGHTS &nbsp;•&nbsp; BUSES &nbsp;•&nbsp; TRAINS
+              </span>
             </div>
 
-            <h1 className="hero-punchy-title">
-              Cabin In The Bus,<br />
-              But In A <span className="title-highlight">Classy Way!</span>
+            {/* Bold Main Headline */}
+            <h1 className="hero-headline-title">
+              Book Your Next<br />
+              <span className="text-highlight-flight">Flight,</span> <span className="text-highlight-bus">Bus</span> or <span className="text-highlight-train">Train</span><br />
+              with RashTrips
             </h1>
 
-            <p className="hero-editorial-sub">
-              Now you can travel anywhere across 250+ Indian cities in high-speed, sanitized AC Sleeper & Seater coaches — and of course it's safe, punctual, and verified with us.
+            {/* Subtitle */}
+            <p className="hero-subtext">
+              Travel smarter. Explore more. All in one place.
             </p>
 
-            <div className="hero-editorial-cta-row">
+            {/* Row of 3 Trust Badges (Round icon badges matching reference image) */}
+            <div className="hero-trust-badges-row">
+              
+              {/* Fast & Easy */}
+              <div className="trust-badge-card">
+                <div className="trust-icon-circle">
+                  <Plane size={18} className="trust-icon" />
+                </div>
+                <div className="trust-badge-text">
+                  <strong className="badge-title">Fast & Easy</strong>
+                  <span className="badge-desc">Book in minutes</span>
+                </div>
+              </div>
+
+              {/* Secure Payments */}
+              <div className="trust-badge-card">
+                <div className="trust-icon-circle">
+                  <ShieldCheck size={18} className="trust-icon" />
+                </div>
+                <div className="trust-badge-text">
+                  <strong className="badge-title">Secure Payments</strong>
+                  <span className="badge-desc">Your data, our priority</span>
+                </div>
+              </div>
+
+              {/* 24/7 Support */}
+              <div className="trust-badge-card">
+                <div className="trust-icon-circle">
+                  <Headphones size={18} className="trust-icon" />
+                </div>
+                <div className="trust-badge-text">
+                  <strong className="badge-title">24/7 Support</strong>
+                  <span className="badge-desc">We're always here</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* ====================================================================
+          2. FLOATING WHITE SEARCH CARD (SEAMLESSLY OVERLAPPING HERO BANNER)
+          ==================================================================== */}
+      <div className="search-widget-floating-container" id="search-widget-anchor">
+        <div className="search-card-white-panel">
+          
+          {/* Multi-Modal Tabs (Flights, Buses, Trains) */}
+          <div className="search-mode-tabs-bar">
+            
+            <button 
+              type="button"
+              className={`mode-tab-btn ${travelMode === 'flights' ? 'active' : ''}`}
+              onClick={() => handleModeChange('flights')}
+            >
+              <Plane size={18} />
+              <span>Flights</span>
+            </button>
+
+            <button 
+              type="button"
+              className={`mode-tab-btn ${travelMode === 'buses' ? 'active' : ''}`}
+              onClick={() => handleModeChange('buses')}
+            >
+              <Bus size={18} />
+              <span>Buses</span>
+              <span className="mode-badge-live">Live</span>
+            </button>
+
+            <button 
+              type="button"
+              className={`mode-tab-btn ${travelMode === 'trains' ? 'active' : ''}`}
+              onClick={() => handleModeChange('trains')}
+            >
+              <Train size={18} />
+              <span>Trains</span>
+            </button>
+
+          </div>
+
+          {/* Search Inputs Row */}
+          <form onSubmit={handleSearchSubmit} className="search-form-horizontal">
+            <div className="search-fields-flex-row">
+              
+              {/* Departure City / Origin */}
+              <div className="search-input-box from-box">
+                <CitySearchInput 
+                  label="From"
+                  value={searchParams.from}
+                  onChange={(city) => setSearchParams(prev => ({ ...prev, from: city }))}
+                  placeholder="Departure city"
+                  excludeCity={searchParams.to}
+                  iconColor="text-blue"
+                />
+              </div>
+
+              {/* City Swap Button */}
               <button 
                 type="button" 
-                className="btn-dark-pill hero-cta-btn"
-                onClick={scrollToSearch}
+                className={`swap-icon-btn ${isSwapping ? 'spinning' : ''}`}
+                onClick={handleSwap}
+                title="Swap Departure and Destination"
               >
-                <span>Book Tickets</span>
-                <ChevronRight size={18} />
+                <ArrowLeftRight size={16} />
               </button>
 
-              <div className="hero-rating-pill">
-                <div className="stars-cluster">
-                  <Star size={14} className="star-filled" />
-                  <Star size={14} className="star-filled" />
-                  <Star size={14} className="star-filled" />
-                  <Star size={14} className="star-filled" />
-                  <Star size={14} className="star-filled" />
-                </div>
-                <span className="rating-num">4.8 / 5.0</span>
-                <span className="rating-tag">• 80k+ Reviews</span>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Right Column: Floating 3D Perspective Smartphone Mockup */}
-          <div className="hero-right-phone-stage">
-            <div className="floating-smartphone-frame">
-              
-              {/* Phone Speaker & Notch */}
-              <div className="phone-notch-bar">
-                <span className="phone-clock">09:41</span>
-                <div className="phone-speaker-cut"></div>
-                <span className="phone-signals">5G 📶</span>
+              {/* Destination City */}
+              <div className="search-input-box to-box">
+                <CitySearchInput 
+                  label="To"
+                  value={searchParams.to}
+                  onChange={(city) => setSearchParams(prev => ({ ...prev, to: city }))}
+                  placeholder="Destination city"
+                  excludeCity={searchParams.from}
+                  iconColor="text-blue"
+                />
               </div>
 
-              {/* Inside Mobile App UI Screen */}
-              <div className="phone-screen-content">
-                
-                {/* User Greeting Bar */}
-                <div className="phone-app-header">
-                  <div className="phone-user-wrap">
-                    <img 
-                      src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80" 
-                      alt="User avatar" 
-                      className="phone-avatar" 
-                    />
-                    <div>
-                      <span className="phone-greeting">Hi, Rahul Sharma 👋</span>
-                      <h4 className="phone-where-to">Where to travel next?</h4>
-                    </div>
-                  </div>
-                  <div className="phone-bell-icon">🔔</div>
+              {/* Departure Date */}
+              <div className="search-input-box date-box">
+                <label className="field-label-text">
+                  <Calendar size={16} className="text-blue" />
+                  <span>Departure Date</span>
+                </label>
+                <div className="input-inner-wrap">
+                  <input 
+                    type="date" 
+                    value={searchParams.date}
+                    min={new Date().toISOString().split('T')[0]}
+                    onChange={(e) => setSearchParams(prev => ({ ...prev, date: e.target.value }))}
+                    className="native-date-input"
+                    required
+                  />
                 </div>
+              </div>
 
-                {/* Hero Mobile Story Card */}
-                <div className="phone-story-card">
-                  <div className="story-card-text">
-                    <span className="story-badge">Flagship Volvo 9600s</span>
-                    <h3>Bengaluru ➔ Hyderabad</h3>
-                    <p>NH 44 Expressway • Overnight Luxury</p>
-                    <span className="story-price-chip">₹1,250 / berth</span>
-                  </div>
-                </div>
-
-                {/* Recommended Section Header */}
-                <div className="phone-section-label-row">
-                  <span className="section-label">Recommended Routes</span>
-                  <span className="section-see-all">See All</span>
-                </div>
-
-                {/* Horizontal Scroll Mini Cards */}
-                <div className="phone-horizontal-cards">
-                  
-                  <div 
-                    className="phone-route-chip active"
-                    onClick={() => selectPinRoute('Bengaluru', 'Hyderabad')}
+              {/* Passengers & Coach Class */}
+              <div className="search-input-box passengers-box">
+                <label className="field-label-text">
+                  <Users size={16} className="text-blue" />
+                  <span>Passengers & Class</span>
+                </label>
+                <div className="input-inner-wrap">
+                  <select 
+                    value={searchParams.busClass || 'ALL'}
+                    onChange={(e) => setSearchParams(prev => ({ ...prev, busClass: e.target.value }))}
+                    className="category-dropdown-select"
                   >
-                    <div className="chip-icon-top">🚌</div>
-                    <span className="chip-route-title">BLR ➔ HYD</span>
-                    <span className="chip-meta">Volvo AC Sleeper</span>
-                    <span className="chip-price">₹1,250</span>
-                  </div>
-
-                  <div 
-                    className="phone-route-chip"
-                    onClick={() => selectPinRoute('Mumbai', 'Goa (Panaji / Panjim)')}
-                  >
-                    <div className="chip-icon-top">🌴</div>
-                    <span className="chip-route-title">MUM ➔ GOA</span>
-                    <span className="chip-meta">BharatBenz Glider</span>
-                    <span className="chip-price">₹1,450</span>
-                  </div>
-
-                  <div 
-                    className="phone-route-chip"
-                    onClick={() => selectPinRoute('Delhi', 'Jaipur')}
-                  >
-                    <div className="chip-icon-top">⚡</div>
-                    <span className="chip-route-title">DEL ➔ JAI</span>
-                    <span className="chip-meta">Zingbus EV Express</span>
-                    <span className="chip-price">₹850</span>
-                  </div>
-
+                    <option value="ALL">1 Passenger • All Coaches</option>
+                    <option value="SLEEPER">1 Passenger • AC Sleeper (2+1)</option>
+                    <option value="WASHROOM">1 Passenger • With Washroom 🚻</option>
+                    <option value="GOVT_RTC">1 Passenger • Govt RTC (KSRTC/MSRTC) 🏛️</option>
+                    <option value="EV">1 Passenger • 100% Electric EV ⚡</option>
+                    <option value="SEATER">1 Passenger • Semi-Sleeper (2+2)</option>
+                    <option value="BUDGET">1 Passenger • Non-AC Budget 🏷️</option>
+                  </select>
                 </div>
+              </div>
 
-                {/* My Active Schedule Card */}
-                <div className="phone-schedule-card">
-                  <div className="schedule-indicator-dot"></div>
-                  <div className="schedule-info">
-                    <span className="schedule-label">My Upcoming Journey</span>
-                    <h5 className="schedule-title">Bengaluru ➔ Hyderabad • 09:30 PM</h5>
-                    <span className="schedule-seat-tag">Seat L1 (Lower Sleeper) • Confirmed</span>
-                  </div>
-                  <div className="schedule-qr-mini">QR</div>
-                </div>
-
-                {/* Floating Bottom Nav inside Phone */}
-                <div className="phone-bottom-nav">
-                  <span className="nav-item active">🏠</span>
-                  <span className="nav-item">🎟️</span>
-                  <span className="nav-item">📍</span>
-                  <span className="nav-item">👤</span>
-                </div>
-
+              {/* Vibrant Blue Search Button (Matching reference image) */}
+              <div className="search-cta-box">
+                <button type="submit" className="btn-rashtrips-search">
+                  <Search size={18} />
+                  <span>Search</span>
+                </button>
               </div>
 
             </div>
-          </div>
 
-        </div>
-      </section>
-
-      {/* ====================================================================
-          2. SIGNATURE ROYAL COBALT BLUE STATS RIBBON (Video Frame 00:04 - 00:06)
-          ==================================================================== */}
-      <section className="camply-stats-ribbon">
-        <div className="stats-ribbon-grid">
-          
-          <div className="stat-ribbon-block">
-            <h2 className="stat-big-number">10</h2>
-            <div className="stat-label-wrap">
-              <span className="stat-label-top">Years Of</span>
-              <span className="stat-label-sub">Experience</span>
-            </div>
-          </div>
-
-          <div className="stat-ribbon-divider"></div>
-
-          <div className="stat-ribbon-block">
-            <h2 className="stat-big-number">1K+</h2>
-            <div className="stat-label-wrap">
-              <span className="stat-label-top">Express Bus</span>
-              <span className="stat-label-sub">Destinations</span>
-            </div>
-          </div>
-
-          <div className="stat-ribbon-divider"></div>
-
-          <div className="stat-ribbon-block">
-            <h2 className="stat-big-number">80K</h2>
-            <div className="stat-label-wrap">
-              <span className="stat-label-top">Happy Highway</span>
-              <span className="stat-label-sub">Customers</span>
-            </div>
-          </div>
-
-          <div className="stat-ribbon-divider"></div>
-
-          <div className="stat-ribbon-block">
-            <h2 className="stat-big-number">4.8</h2>
-            <div className="stat-label-wrap">
-              <span className="stat-label-top">Overall</span>
-              <span className="stat-label-sub">Rating</span>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ====================================================================
-          3. "THAT'S THE WAY TO TRAVEL!" 4 BENEFITS SECTION (Video Frame 00:06)
-          ==================================================================== */}
-      <section className="camply-benefits-section">
-        <div className="benefits-container">
-          
-          <div className="benefits-header-col">
-            <h2 className="benefits-headline">That's The Way<br />To Travel!</h2>
-            <p className="benefits-subtext">
-              Try a variety of benefits when using our intercity express coaches across India.
-            </p>
-          </div>
-
-          <div className="benefits-cards-grid">
-            
-            <div className="benefit-card">
-              <div className="benefit-icon-badge bg-circle-blue">
-                <span>🌍</span>
-              </div>
-              <h3 className="benefit-card-title">Lot Of Choices</h3>
-              <p className="benefit-card-desc">
-                We have 12+ luxury coach types operating with top Indian fleet partners like VRL, KSRTC, & Zingbus.
-              </p>
-            </div>
-
-            <div className="benefit-card">
-              <div className="benefit-icon-badge bg-circle-orange">
-                <span>🧭</span>
-              </div>
-              <h3 className="benefit-card-title">Best Highway Captains</h3>
-              <p className="benefit-card-desc">
-                Our certified drivers and onboard crew are ready to guide you safely anytime & anywhere.
-              </p>
-            </div>
-
-            <div className="benefit-card">
-              <div className="benefit-icon-badge bg-circle-card">
-                <span>💳</span>
-              </div>
-              <h3 className="benefit-card-title">Easy Instant Booking</h3>
-              <p className="benefit-card-desc">
-                With an easy, safe and fast ticket purchase process with instant UPI QR & Aadhaar verification.
-              </p>
-            </div>
-
-            <div className="benefit-card">
-              <div className="benefit-icon-badge bg-circle-shield">
-                <span>🛡️</span>
-              </div>
-              <h3 className="benefit-card-title">Live AIS-140 GPS</h3>
-              <p className="benefit-card-desc">
-                Government-standard real-time NavIC highway radar to track your coach every single minute.
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* ====================================================================
-          4. INTERACTIVE ROUTE MAP & SEARCH SECTION (Video Frame 00:07 - 00:09)
-          ==================================================================== */}
-      <section id="route-search-anchor" className="camply-map-search-section">
-        <div className="map-search-container">
-          
-          <div className="map-search-split">
-            
-            {/* Left Dotted India Map with Interactive City Pins */}
-            <div className="interactive-map-wrapper">
-              <div className="dotted-map-canvas">
-                
-                {/* SVG Dotted India Route Grid */}
-                <svg className="dotted-pattern-svg" width="100%" height="100%" viewBox="0 0 540 380" fill="none">
-                  {/* Subtle decorative dot array simulating country map */}
-                  <g opacity="0.35" fill="#1665ff">
-                    <circle cx="270" cy="60" r="3" />
-                    <circle cx="290" cy="70" r="3" />
-                    <circle cx="260" cy="80" r="3" />
-                    <circle cx="280" cy="90" r="3" />
-                    <circle cx="310" cy="80" r="3" />
-                    <circle cx="240" cy="110" r="3" />
-                    <circle cx="260" cy="120" r="3" />
-                    <circle cx="290" cy="130" r="3" />
-                    <circle cx="320" cy="120" r="3" />
-                    <circle cx="220" cy="140" r="3" />
-                    <circle cx="250" cy="150" r="3" />
-                    <circle cx="280" cy="160" r="3" />
-                    <circle cx="310" cy="160" r="3" />
-                    <circle cx="340" cy="150" r="3" />
-                    <circle cx="200" cy="180" r="3" />
-                    <circle cx="230" cy="190" r="3" />
-                    <circle cx="260" cy="200" r="3" />
-                    <circle cx="290" cy="200" r="3" />
-                    <circle cx="320" cy="210" r="3" />
-                    <circle cx="210" cy="230" r="3" />
-                    <circle cx="240" cy="240" r="3" />
-                    <circle cx="270" cy="250" r="3" />
-                    <circle cx="300" cy="250" r="3" />
-                    <circle cx="230" cy="280" r="3" />
-                    <circle cx="260" cy="290" r="3" />
-                    <circle cx="280" cy="300" r="3" />
-                    <circle cx="260" cy="330" r="3" />
-                    <circle cx="270" cy="350" r="3" />
-                  </g>
-                  {/* Subtle connecting highway paths */}
-                  <path d="M260 80 L230 190 L260 290 L270 350" stroke="#1665ff" strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-                  <path d="M230 190 L300 250 L260 290" stroke="#1665ff" strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-                </svg>
-
-                {/* Glowing Location Pins from the reference video */}
-                <div 
-                  className="map-pin-badge pin-delhi"
-                  onClick={() => selectPinRoute('Delhi', 'Jaipur')}
-                  title="Delhi Interstate Hub"
-                >
-                  <div className="pin-avatar-thumb">
-                    <span>🏛️</span>
-                  </div>
-                  <span className="pin-label">Delhi</span>
-                </div>
-
-                <div 
-                  className="map-pin-badge pin-mumbai"
-                  onClick={() => selectPinRoute('Mumbai', 'Goa (Panaji / Panjim)')}
-                  title="Mumbai Bypass Hub"
-                >
-                  <div className="pin-avatar-thumb">
-                    <span>🏙️</span>
-                  </div>
-                  <span className="pin-label">Mumbai</span>
-                </div>
-
-                <div 
-                  className="map-pin-badge pin-goa"
-                  onClick={() => selectPinRoute('Mumbai', 'Goa (Panaji / Panjim)')}
-                  title="Goa Coastal Hub"
-                >
-                  <div className="pin-avatar-thumb">
-                    <span>🌴</span>
-                  </div>
-                  <span className="pin-label">Goa</span>
-                </div>
-
-                <div 
-                  className="map-pin-badge pin-hyderabad"
-                  onClick={() => selectPinRoute('Bengaluru', 'Hyderabad')}
-                  title="Hyderabad IT Corridor"
-                >
-                  <div className="pin-avatar-thumb">
-                    <span>🕌</span>
-                  </div>
-                  <span className="pin-label">Hyderabad</span>
-                </div>
-
-                <div 
-                  className="map-pin-badge pin-bengaluru featured-pin"
-                  onClick={() => selectPinRoute('Bengaluru', 'Hyderabad')}
-                  title="Bengaluru Majestic KBS"
-                >
-                  <div className="pin-avatar-thumb">
-                    <span>🚌</span>
-                  </div>
-                  <span className="pin-label">Bengaluru Hub</span>
-                </div>
-
-                <div 
-                  className="map-pin-badge pin-chennai"
-                  onClick={() => selectPinRoute('Chennai', 'Bengaluru')}
-                  title="Chennai CMBT"
-                >
-                  <div className="pin-avatar-thumb">
-                    <span>🌊</span>
-                  </div>
-                  <span className="pin-label">Chennai</span>
-                </div>
-
-              </div>
-            </div>
-
-            {/* Right Editorial Text & Floating Pill Search Bar */}
-            <div className="map-search-right">
-              
-              <div className="map-search-text-block">
-                <h2 className="map-title">
-                  Starry Night, Highway Express, What Else Do You Need?
-                </h2>
-                <p className="map-subtitle">
-                  Explore more than 250+ express destinations across India. Find your most comfortable sleeper berth and book instantly.
-                </p>
-              </div>
-
-              {/* Clean White Floating Pill Search Bar (Reference Video Frame 00:08) */}
-              <div className="camply-floating-search-bar">
-                <form 
-                  onSubmit={(e) => { e.preventDefault(); onSearch(); }} 
-                  className="pill-search-form"
-                >
-                  <div className="pill-inputs-container">
-                    
-                    {/* Origin Input */}
-                    <div className="pill-input-item">
-                      <CitySearchInput 
-                        label="From"
-                        value={searchParams.from}
-                        onChange={(city) => setSearchParams(prev => ({ ...prev, from: city }))}
-                        placeholder="Choose Departure"
-                        excludeCity={searchParams.to}
-                        iconColor="text-primary-blue"
-                      />
-                    </div>
-
-                    {/* Quick Swap Icon */}
-                    <button 
-                      type="button" 
-                      className={`pill-swap-btn ${isSwapping ? 'spinning' : ''}`}
-                      onClick={handleSwap}
-                      title="Swap cities"
-                    >
-                      <ArrowLeftRight size={15} />
-                    </button>
-
-                    {/* Destination Input */}
-                    <div className="pill-input-item">
-                      <CitySearchInput 
-                        label="To"
-                        value={searchParams.to}
-                        onChange={(city) => setSearchParams(prev => ({ ...prev, to: city }))}
-                        placeholder="Choose Destination"
-                        excludeCity={searchParams.from}
-                        iconColor="text-cyan"
-                      />
-                    </div>
-
-                    {/* Date Input */}
-                    <div className="pill-input-item date-pill-item">
-                      <div className="date-field-mini">
-                        <label className="mini-label">
-                          <Calendar size={13} className="text-primary-blue" />
-                          <span>Date</span>
-                        </label>
-                        <input 
-                          type="date"
-                          value={searchParams.date}
-                          min={new Date().toISOString().split('T')[0]}
-                          onChange={(e) => setSearchParams(prev => ({ ...prev, date: e.target.value }))}
-                          className="mini-date-input"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    {/* Category Select */}
-                    <div className="pill-input-item cat-pill-item">
-                      <div className="date-field-mini">
-                        <label className="mini-label">
-                          <Zap size={13} className="text-warning" />
-                          <span>Class</span>
-                        </label>
-                        <select 
-                          value={searchParams.busClass}
-                          onChange={(e) => setSearchParams(prev => ({ ...prev, busClass: e.target.value }))}
-                          className="mini-select-input"
-                        >
-                          <option value="ALL">All Categories</option>
-                          <option value="SLEEPER">Volvo AC Sleeper</option>
-                          <option value="WASHROOM">With Washroom 🚻</option>
-                          <option value="EV">Electric EV ⚡</option>
-                          <option value="SEATER">Semi-Sleeper</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Round Dark Search Action Button */}
-                    <button 
-                      type="submit" 
-                      className="pill-search-submit-circle"
-                      title="Search available buses"
-                    >
-                      <Search size={20} />
-                    </button>
-
-                  </div>
-                </form>
-              </div>
-
-              {/* Quick Route Shortcuts underneath */}
-              <div className="camply-quick-pills-row">
-                <span className="pills-label">Popular Corridors:</span>
+            {/* Sub-bar: Dates & Quick Popular Routes across India */}
+            <div className="search-sub-bar">
+              <div className="quick-dates-group">
+                <span className="sub-bar-label">Quick Dates:</span>
                 <button 
                   type="button" 
-                  className="quick-route-bubble"
-                  onClick={() => selectPinRoute('Bengaluru', 'Hyderabad')}
+                  className={`sub-date-chip ${isToday() ? 'active' : ''}`}
+                  onClick={() => setQuickDate(0)}
+                >
+                  Today
+                </button>
+                <button 
+                  type="button" 
+                  className={`sub-date-chip ${isTomorrow() ? 'active' : ''}`}
+                  onClick={() => setQuickDate(1)}
+                >
+                  Tomorrow
+                </button>
+                <button 
+                  type="button" 
+                  className="sub-date-chip"
+                  onClick={() => setQuickDate(2)}
+                >
+                  Day After
+                </button>
+              </div>
+
+              <div className="quick-routes-group">
+                <span className="sub-bar-label">Popular Routes:</span>
+                <button 
+                  type="button" 
+                  className="sub-route-chip"
+                  onClick={() => setSearchParams(prev => ({ ...prev, from: 'Bengaluru', to: 'Hyderabad' }))}
                 >
                   Bengaluru ➔ Hyderabad
                 </button>
                 <button 
                   type="button" 
-                  className="quick-route-bubble"
-                  onClick={() => selectPinRoute('Mumbai', 'Goa (Panaji / Panjim)')}
+                  className="sub-route-chip"
+                  onClick={() => setSearchParams(prev => ({ ...prev, from: 'Mumbai', to: 'Goa (Panaji / Panjim)' }))}
                 >
                   Mumbai ➔ Goa
                 </button>
                 <button 
                   type="button" 
-                  className="quick-route-bubble"
-                  onClick={() => selectPinRoute('Delhi', 'Jaipur')}
+                  className="sub-route-chip"
+                  onClick={() => setSearchParams(prev => ({ ...prev, from: 'Delhi', to: 'Manali' }))}
                 >
-                  Delhi ➔ Jaipur
+                  Delhi ➔ Manali
+                </button>
+                <button 
+                  type="button" 
+                  className="sub-route-chip"
+                  onClick={() => setSearchParams(prev => ({ ...prev, from: 'Chennai', to: 'Coimbatore' }))}
+                >
+                  Chennai ➔ Coimbatore
+                </button>
+                <button 
+                  type="button" 
+                  className="sub-route-chip"
+                  onClick={() => setSearchParams(prev => ({ ...prev, from: 'Pune', to: 'Mumbai' }))}
+                >
+                  Pune ➔ Mumbai
+                </button>
+                <button 
+                  type="button" 
+                  className="sub-route-chip"
+                  onClick={() => setSearchParams(prev => ({ ...prev, from: 'Kolkata', to: 'Siliguri' }))}
+                >
+                  Kolkata ➔ Siliguri
                 </button>
               </div>
+            </div>
 
+          </form>
+
+        </div>
+      </div>
+
+      {/* ====================================================================
+          3. "WHY CHOOSE RASHTRIPS?" SECTION (EXACTLY AS IN REFERENCE IMAGE)
+          ==================================================================== */}
+      <section className="why-choose-section" id="why-choose-anchor">
+        <div className="why-choose-container">
+          
+          {/* Left Title Block */}
+          <div className="why-choose-left-text">
+            <span className="why-choose-kicker">WHY CHOOSE RASHTRIPS?</span>
+            <h2 className="why-choose-title">Your Journey, Our Priority</h2>
+            <p className="why-choose-desc">
+              Whether it's a quick getaway or a long journey, we make booking tickets simple, safe and stress-free.
+            </p>
+          </div>
+
+          {/* Right: 3 Feature Cards */}
+          <div className="why-choose-cards-grid">
+            
+            {/* Card 1: Best Prices */}
+            <div className="feature-white-card">
+              <div className="feature-icon-bubble bubble-blue">
+                <Plane size={22} className="feature-icon-svg" />
+              </div>
+              <h3 className="feature-card-title">Best Prices</h3>
+              <p className="feature-card-desc">
+                Get the most competitive fares across all transport modes.
+              </p>
+            </div>
+
+            {/* Card 2: Trusted & Secure */}
+            <div className="feature-white-card">
+              <div className="feature-icon-bubble bubble-green">
+                <ShieldCheck size={22} className="feature-icon-svg" />
+              </div>
+              <h3 className="feature-card-title">Trusted & Secure</h3>
+              <p className="feature-card-desc">
+                100% safe transactions with multiple payment options.
+              </p>
+            </div>
+
+            {/* Card 3: Easy Booking */}
+            <div className="feature-white-card">
+              <div className="feature-icon-bubble bubble-purple">
+                <Clock size={22} className="feature-icon-svg" />
+              </div>
+              <h3 className="feature-card-title">Easy Booking</h3>
+              <p className="feature-card-desc">
+                Book in just a few clicks from anywhere, anytime.
+              </p>
             </div>
 
           </div>
 
         </div>
+
+        {/* Bottom Decorative Wave Ribbon (Matching Reference Image) */}
+        <div className="wave-footer-ribbon">
+          <div className="wave-content-wrap">
+            <div className="wave-left-quote">
+              {/* Mountain Line Art Icon */}
+              <svg className="mountain-svg" width="36" height="24" viewBox="0 0 36 24" fill="none">
+                <path d="M2 22L12 6L18 14L24 4L34 22H2Z" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span className="handwritten-tagline">Same destination. Different stories.</span>
+            </div>
+
+            <button 
+              type="button" 
+              className="explore-more-link"
+              onClick={() => {
+                const el = document.getElementById('search-results-anchor');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              <span>Explore More</span>
+              <span className="arrow-sym">➔</span>
+            </button>
+          </div>
+        </div>
+
       </section>
+
+      {/* Scroll Anchor for search results */}
+      <div id="search-results-anchor"></div>
 
     </div>
   );

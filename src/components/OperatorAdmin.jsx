@@ -47,7 +47,7 @@ export default function OperatorAdmin({
   // New bus form state for India
   const [newBus, setNewBus] = useState({
     name: '',
-    operator: 'OmniBus India Superfast',
+    operator: 'RashTrips Express Superfast',
     type: 'Volvo B11R AC Sleeper (2+1)',
     from: 'Bengaluru',
     to: 'Hyderabad',
@@ -113,7 +113,7 @@ export default function OperatorAdmin({
       setShowAddForm(false);
       setNewBus({
         name: '',
-        operator: 'OmniBus India Superfast',
+        operator: 'RashTrips Express Superfast',
         type: 'Volvo B11R AC Sleeper (2+1)',
         from: 'Bengaluru',
         to: 'Hyderabad',

@@ -10,7 +10,10 @@ import {
   Users, 
   ShieldCheck, 
   Heart,
-  MessageSquare
+  MessageSquare,
+  Plane,
+  Bus,
+  Train
 } from 'lucide-react';
 
 export default function CamplySections({ onExploreClick }) {
@@ -18,15 +21,15 @@ export default function CamplySections({ onExploreClick }) {
   const testimonials = [
     {
       id: 1,
-      quote: "Thanks to OmniBus I can now travel across South India comfortably overnight without booking trains months ahead!",
+      quote: "Thanks to RashTrips I can now seamlessly book flights, express Volvo sleeper buses, and trains all in one sleek dashboard!",
       name: "Wade Warren",
-      role: "Frequent Highway Traveler",
+      role: "Frequent Multi-Modal Traveler",
       avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
       rating: 5
     },
     {
       id: 2,
-      quote: "I think this is the cleanest Volvo sleeper service I have ever tried. Bedding was sanitized, sealed and pillows were warm.",
+      quote: "The cleanest Volvo 9600s sleeper coach service. Bio-toilet onboard was hygienic, bedding was sealed and sanitized.",
       name: "Theresa Jordan",
       role: "Tech Consultant • Bengaluru",
       avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80",
@@ -34,7 +37,7 @@ export default function CamplySections({ onExploreClick }) {
     },
     {
       id: 3,
-      quote: "The live GPS telemetry radar saved me from standing at the bypass in the rain. Arrived exactly on the minute!",
+      quote: "The live telemetry radar saved me from waiting in the rain at the highway bypass. Coach arrived exactly on time!",
       name: "James Wilson",
       role: "Architect • Mumbai",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
@@ -42,7 +45,7 @@ export default function CamplySections({ onExploreClick }) {
     },
     {
       id: 4,
-      quote: "As a solo female traveler, the female-only reserved berths and verified Captain details gave me complete peace of mind.",
+      quote: "The Govt ID proof verification and OTP flow gives real security. Booking is fast, safe, and transparent on RashTrips.",
       name: "Pooja Verma",
       role: "Travel Blogger • Hyderabad",
       avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
@@ -67,20 +70,20 @@ export default function CamplySections({ onExploreClick }) {
 
   const faqs = [
     {
-      question: "What is OmniBus Express?",
-      answer: "OmniBus Express is India's premium intercity bus booking platform partnering with top state corporations (KSRTC, MSRTC, TSRTC) and private luxury multi-axle fleets (Volvo 9600s, Mercedes-Benz, Scania) with live telemetry and instant UPI ticketing."
+      question: "What is RashTrips?",
+      answer: "RashTrips is India's premier multi-modal travel ticketing platform connecting Flights, Intercity Luxury Buses (Volvo 9600s, BharatBenz, KSRTC, MSRTC, TSRTC), and Trains with live GPS telemetry, instant UPI checkout, and verified passenger ticketing."
     },
     {
-      question: "How do I book tatkal and sleeper tickets?",
-      answer: "Select your departure and arrival cities, pick your preferred date, choose between single or double berths, verify your Govt ID proof, and complete payment via instant UPI QR code or RuPay card."
+      question: "How do I book bus tickets on RashTrips?",
+      answer: "Enter your departure and destination cities (supporting all 100+ cities and areas across India), select your travel date and preferred coach category, pick your sleeper or recliner berths, verify your customer mobile via OTP, enter Govt ID proof, and pay securely via UPI."
     },
     {
-      question: "What kind of safety, washroom, and hygiene services will I get?",
-      answer: "Every AC sleeper coach features sanitized blankets, private curtains, onboard 5G Wi-Fi, 220V charging ports, and optional washroom onboard facilities marked with the 🚻 icon on the schedule."
+      question: "What amenities are provided on RashTrips coaches?",
+      answer: "Our partner fleets feature hygienic bio-washrooms on board (marked with 🚻), sanitized blankets, 220V laptop & 65W USB fast charging ports, 5G Wi-Fi, individual TV screens, and trained senior drivers."
     },
     {
       question: "Can I cancel my ticket and get an instant refund?",
-      answer: "Yes! Simply navigate to the 'My Bookings' tab, locate your PNR, and click Cancel. Eligible refunds are automatically processed back to your original UPI account or card."
+      answer: "Yes! Navigate to the 'My Bookings' tab, find your PNR, and click Cancel Ticket. Instant refunds are credited directly back to your original UPI account (GPay, PhonePe, Paytm) or card."
     }
   ];
 
@@ -98,23 +101,23 @@ export default function CamplySections({ onExploreClick }) {
     <div className="camply-extra-sections">
       
       {/* ====================================================================
-          1. COMMUNITY SECTION (Video frame 00:10)
+          1. COMMUNITY SECTION
           ==================================================================== */}
       <section className="camply-community-section">
         <div className="camply-community-container">
           <div className="community-left-text">
             <span className="community-tag">
-              <Users size={15} /> 100,000+ Highway Yatris
+              <Users size={15} /> 100,000+ Verified Travelers
             </span>
             <h2 className="community-headline">
-              India's Highway Network Is Calling, No Need For Stalling.
+              India's Travel Network Is Calling, No Need For Stalling.
             </h2>
             <p className="community-subtext">
-              Want more fun journeys? Join our traveler community to get verified seatmate tips, highway dhaba recommendations, and instant tatkal seat alerts.
+              Looking for hassle-free journeys? Join the RashTrips traveler community for verified seatmate tips, highway rest-stop recommendations, and tatkal alerts across Flights, Buses & Trains.
             </p>
             <div className="community-actions">
-              <button className="btn-dark-pill" onClick={onExploreClick}>
-                Join OmniBus Club
+              <button className="btn-rashtrips-pill" onClick={onExploreClick}>
+                Explore RashTrips Network
               </button>
             </div>
           </div>
@@ -168,12 +171,12 @@ export default function CamplySections({ onExploreClick }) {
       </section>
 
       {/* ====================================================================
-          2. TESTIMONIALS SECTION (Video frame 00:11 - 00:13)
+          2. TESTIMONIALS SECTION
           ==================================================================== */}
       <section className="camply-testimonials-section">
         <div className="testimonials-header-row">
           <div>
-            <span className="section-small-badge">PASSENGER VOICES</span>
+            <span className="section-small-badge">TRAVELER VOICES</span>
             <h2 className="camply-section-title">Satisfied Passengers Are Our Best Proof.</h2>
           </div>
 
@@ -221,7 +224,7 @@ export default function CamplySections({ onExploreClick }) {
       </section>
 
       {/* ====================================================================
-          3. FAQ & QUESTIONS SECTION (Video frame 00:14 - 00:15)
+          3. FAQ & QUESTIONS SECTION
           ==================================================================== */}
       <section className="camply-faq-section">
         <div className="camply-faq-card">
@@ -231,10 +234,10 @@ export default function CamplySections({ onExploreClick }) {
             <div className="faq-left-col">
               <span className="faq-doodle-spark">✦</span>
               <h2 className="faq-headline">
-                Got A Question About OmniBus?
+                Got A Question About RashTrips?
               </h2>
               <p className="faq-subtext">
-                If there are questions you want to ask, our 24/7 highway support desk will answer all your inquiries.
+                If there are questions you want to ask, our 24/7 passenger support desk will answer all your inquiries.
               </p>
 
               <form onSubmit={handleSubscribe} className="faq-newsletter-form">
@@ -246,7 +249,7 @@ export default function CamplySections({ onExploreClick }) {
                     onChange={(e) => setEmailInput(e.target.value)}
                     required
                   />
-                  <button type="submit" className="btn-dark-pill newsletter-btn">
+                  <button type="submit" className="btn-rashtrips-pill newsletter-btn">
                     {emailSubscribed ? 'Subscribed!' : 'Submit'}
                   </button>
                 </div>

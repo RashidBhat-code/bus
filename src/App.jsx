@@ -8,8 +8,6 @@ import TicketModal from './components/TicketModal';
 import MyBookings from './components/MyBookings';
 import LiveTracker from './components/LiveTracker';
 import OperatorAdmin from './components/OperatorAdmin';
-import HindiSongsSection from './components/HindiSongsSection';
-import GlobalMusicBar from './components/GlobalMusicBar';
 import CamplySections from './components/CamplySections';
 import { 
   BUS_OPERATORS, 
@@ -17,12 +15,6 @@ import {
   INITIAL_BOOKINGS, 
   getBusesForRoute 
 } from './data/mockBuses';
-import { HINDI_90S_SONGS } from './data/hindiSongs90s';
-import { 
-  startSongPlayback, 
-  stopSongPlayback, 
-  setMasterVolume 
-} from './utils/audioEngine';
 import { 
   subscribeToBuses, 
   subscribeToBookings, 
@@ -35,16 +27,14 @@ import {
 import './App.css';
 
 const LOCAL_STORAGE_KEY = 'omnibus_india_bookings_v2';
-const THEME_KEY = 'omnibus_theme_v2';
+const THEME_KEY = 'rashtrips_theme_v1';
 
 export default function App() {
   // Navigation tab: 'search' | 'bookings' | 'tracker' | 'admin'
   const [activeTab, setActiveTab] = useState('search');
 
-  // Theme & Currency (Light mode is signature Camply style)
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem(THEME_KEY) || 'light';
-  });
+  // Enforce pure clean white RashTrips theme
+  const [theme, setTheme] = useState('light');
   const [currency, setCurrency] = useState('INR');
 
   // Search parameters for India
@@ -54,6 +44,9 @@ export default function App() {
     date: new Date().toISOString().split('T')[0],
     busClass: 'ALL'
   });
+
+  // Active travel mode: 'flights' | 'buses' | 'trains'
+  const [activeMode, setActiveMode] = useState('buses');
 
   // Master bus catalog
   const [allBuses, setAllBuses] = useState(BUS_OPERATORS);
@@ -79,60 +72,6 @@ export default function App() {
   const [bookingBus, setBookingBus] = useState(null);
   const [ticketToView, setTicketToView] = useState(null);
   const [activeTrackerBooking, setActiveTrackerBooking] = useState(null);
-
-  // =========================================================================
-  // PERSISTENT 90s HINDI SONGS MUSIC STATE (Does NOT stop during view changes)
-  // =========================================================================
-  const [currentSong, setCurrentSong] = useState(HINDI_90S_SONGS[0]);
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-  const [audioVolume, setAudioVolume] = useState(0.8);
-  const [audioProgressSec, setAudioProgressSec] = useState(0);
-
-  const handlePlaySong = (song) => {
-    setCurrentSong(song);
-    setIsAudioPlaying(true);
-    setAudioProgressSec(0);
-    startSongPlayback(song, (sec) => {
-      setAudioProgressSec(Math.round(sec));
-    });
-  };
-
-  const handlePauseSong = () => {
-    setIsAudioPlaying(false);
-    stopSongPlayback();
-  };
-
-  const handleTogglePlay = () => {
-    if (isAudioPlaying) {
-      handlePauseSong();
-    } else {
-      handlePlaySong(currentSong);
-    }
-  };
-
-  const handleNextSong = () => {
-    const currentIndex = HINDI_90S_SONGS.findIndex(s => s.id === currentSong.id);
-    const nextIndex = (currentIndex + 1) % HINDI_90S_SONGS.length;
-    handlePlaySong(HINDI_90S_SONGS[nextIndex]);
-  };
-
-  const handlePrevSong = () => {
-    const currentIndex = HINDI_90S_SONGS.findIndex(s => s.id === currentSong.id);
-    const prevIndex = (currentIndex - 1 + HINDI_90S_SONGS.length) % HINDI_90S_SONGS.length;
-    handlePlaySong(HINDI_90S_SONGS[prevIndex]);
-  };
-
-  const handleVolumeChange = (vol) => {
-    setAudioVolume(vol);
-    setMasterVolume(vol);
-  };
-
-  // Clean up audio on unmount
-  useEffect(() => {
-    return () => {
-      stopSongPlayback();
-    };
-  }, []);
 
   // Persisted Bookings list
   const [bookings, setBookings] = useState(() => {
@@ -223,14 +162,17 @@ export default function App() {
   }, []);
 
   // Sync theme
+  // Enforce pure clean light mode
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem(THEME_KEY, theme);
-  }, [theme]);
+    document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem(THEME_KEY, 'light');
+    try {
+      localStorage.removeItem('omnibus_theme_v2');
+      localStorage.removeItem('omnibus_theme');
+    } catch {}
+  }, []);
 
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
+  const toggleTheme = () => {};
 
   // Indian Rupee & Multi-Currency Formatter
   const formatPrice = (amountInInr) => {
@@ -422,25 +364,21 @@ export default function App() {
         currency={currency}
         setCurrency={setCurrency}
         dbStatus={dbStatus}
+        activeMode={activeMode}
+        setActiveMode={setActiveMode}
       />
 
       {/* Main Content Area */}
       <main className="main-content">
         {activeTab === 'search' && (
           <div className="search-tab-view">
-            {/* 3D Animated Hero & Search Bar */}
+            {/* RashTrips Hero & Search Widget */}
             <HeroSearch 
               searchParams={searchParams}
               setSearchParams={setSearchParams}
               onSearch={handleSearch}
-            />
-
-            {/* 📻 Dedicated 90s Bollywood Hindi Songs Highway Radio Section */}
-            <HindiSongsSection 
-              currentSong={currentSong}
-              isPlaying={isAudioPlaying}
-              onPlaySong={handlePlaySong}
-              onPauseSong={handlePauseSong}
+              activeMode={activeMode}
+              setActiveMode={setActiveMode}
             />
 
             {/* Results & Filters Grid */}
@@ -569,30 +507,18 @@ export default function App() {
         />
       )}
 
-      {/* 🎵 Global Persistent 90s Music Player Bar (Continuous across all views) */}
-      <GlobalMusicBar 
-        currentSong={currentSong}
-        isPlaying={isAudioPlaying}
-        onTogglePlay={handleTogglePlay}
-        onNextSong={handleNextSong}
-        onPrevSong={handlePrevSong}
-        volume={audioVolume}
-        onVolumeChange={handleVolumeChange}
-        progressSec={audioProgressSec}
-      />
 
-      {/* Signature Cobalt Blue Footer (Reference Video Frame 00:16) */}
-      <footer className="camply-royal-footer no-print">
-        <div className="camply-footer-inner">
+      {/* Signature RashTrips Travel Footer */}
+      <footer className="rashtrips-footer no-print">
+        <div className="rashtrips-footer-inner">
           
           {/* Left Brand Column */}
           <div className="footer-col-brand">
             <div className="footer-logo-wrap">
-              <span className="footer-logo-text">OmniBus</span>
-              <span className="footer-logo-dot">.</span>
+              <span className="footer-logo-text">Rash<strong>Trips</strong></span>
             </div>
             <p className="footer-brand-tagline">
-              We always make our passengers happy by providing as many luxury travel choices as possible across 250+ Indian express corridors.
+              Travel smarter. Explore more. All in one place. India's premier multi-modal travel platform connecting Flights, Intercity Express Buses & Trains.
             </p>
           </div>
 
@@ -601,36 +527,37 @@ export default function App() {
             <h4 className="footer-col-heading">Company</h4>
             <ul className="footer-link-list">
               <li><button onClick={() => setActiveTab('search')}>About Us</button></li>
-              <li><button onClick={() => setActiveTab('search')}>Features</button></li>
-              <li><button onClick={() => setActiveTab('search')}>Express Routes</button></li>
-              <li><button onClick={() => setActiveTab('search')}>FAQ Desk</button></li>
+              <li><button onClick={() => setActiveTab('search')}>Flights</button></li>
+              <li><button onClick={() => setActiveTab('search')}>Express Buses</button></li>
+              <li><button onClick={() => setActiveTab('search')}>Trains</button></li>
             </ul>
           </div>
 
           <div className="footer-col-links">
-            <h4 className="footer-col-heading">Resources</h4>
+            <h4 className="footer-col-heading">Travel Network</h4>
             <ul className="footer-link-list">
-              <li><button onClick={() => setActiveTab('search')}>Festival Express</button></li>
-              <li><button onClick={() => setActiveTab('search')}>Promo Codes</button></li>
+              <li><button onClick={() => setActiveTab('search')}>Volvo 9600s Sleepers</button></li>
+              <li><button onClick={() => setActiveTab('search')}>Govt RTC Partners</button></li>
               <li><button onClick={() => setActiveTab('tracker')}>Live Highway Radar</button></li>
-              <li><button onClick={() => setActiveTab('admin')}>Fleet Portal</button></li>
+              <li><button onClick={() => setActiveTab('admin')}>Operator Dispatcher</button></li>
             </ul>
           </div>
 
           <div className="footer-col-links">
             <h4 className="footer-col-heading">Support</h4>
             <ul className="footer-link-list">
-              <li><button onClick={() => setActiveTab('bookings')}>My Account</button></li>
-              <li><button onClick={() => setActiveTab('bookings')}>Support Center</button></li>
-              <li><button onClick={() => setActiveTab('bookings')}>Ticket Cancellation</button></li>
-              <li><button onClick={() => setActiveTab('search')}>Accessibility</button></li>
+              <li><button onClick={() => setActiveTab('bookings')}>My Bookings</button></li>
+              <li><button onClick={() => setActiveTab('bookings')}>E-Ticket Download</button></li>
+              <li><button onClick={() => setActiveTab('bookings')}>Instant UPI Cancellation</button></li>
+              <li><button onClick={() => setActiveTab('search')}>24/7 Helpline</button></li>
             </ul>
           </div>
 
           {/* Contact Info Column */}
           <div className="footer-col-contact">
-            <h4 className="footer-col-heading">Contact Info</h4>
-            <p className="footer-contact-email">support@omnibus.in</p>
+            <h4 className="footer-col-heading">Passenger Helpline</h4>
+            <p className="footer-contact-phone">1800-102-RASH (Toll-Free)</p>
+            <p className="footer-contact-email">support@rashtrips.com</p>
             <div className="footer-social-icons">
               <span className="social-pill-icon" title="Instagram">📸</span>
               <span className="social-pill-icon" title="Twitter">🐦</span>
@@ -642,7 +569,7 @@ export default function App() {
         </div>
 
         <div className="footer-bottom-bar">
-          <p className="copyright-text">Copyright © 2026 OmniBus Mobility India Pvt Ltd. All rights reserved.</p>
+          <p className="copyright-text">Copyright © 2026 RashTrips Travel Mobility India Pvt Ltd. All rights reserved.</p>
         </div>
       </footer>
     </div>
